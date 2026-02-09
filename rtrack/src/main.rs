@@ -35,8 +35,23 @@ fn main() {
         }
     };
 
-    // Week 1: Count number of lines (records), including empty ones for now
-    let total_records = contents.lines().count();
+    // Week 2: Count total lines (including empty lines), and valid vs rejected
+    let mut total_records: usize = 0;
+    let mut valid_records: usize = 0;
+    let mut rejected_records: usize = 0;
+
+    for line in contents.lines() {
+        total_records += 1;
+
+        if is_valid_line(line) {
+            valid_records += 1;
+        } else {
+            rejected_records += 1;
+        }
+    }
 
     println!("Total records: {}", total_records);
+    println!("Valid records: {}", valid_records);
+    println!("Rejected records: {}", rejected_records);
+
 }
