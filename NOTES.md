@@ -24,3 +24,11 @@
 - Rust needs to know type of variables at compile time, so branches of if else statements need to match return type.
 
 # Week 3 Notes
+- This week I learned how structs and enums help model data more clearly in Rust.
+- A struct is useful when multiple related pieces of data belong together. In this project, `Record` stores the three raw fields from one input line.
+- An enum is useful when a value can be one of several fixed possibilities. For example, `Kind` can only be `Workout`, `Meal`, or `Sleep`.
+- I also learned that enums are helpful for errors. `ParseError` lets me represent different failure cases like `EmptyLine`, `WrongFieldCount`, and `InvalidKind`.
+- Compared to returning `bool`, returning `Result<Record, ParseError>` is more informative because it tells both whether parsing succeeded and why it failed.
+- Even though it is confusing to learn in the beginning, `Option<Kind>` is useful when a value might or might not exist. `Some(...)` means valid kind, and `None` means invalid kind.
+- `match` is very important when working with enums like `Option` and `Result` because it forces me to handle each possible case.
+- This week helped me understand that Rust code can feel strict, but that makes the code clearer and safer.
