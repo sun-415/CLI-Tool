@@ -22,3 +22,5 @@
 - Because this content is more new to me, I find that it is easier to read the chapter material first rather than jumping straight into rustlings exercises.
 - Rust does not auto convert non-bool types to bool(unlike other coding lang where any non-zero value is true).
 - Rust needs to know type of variables at compile time, so branches of if else statements need to match return type.
+
+# Week 3 Notes

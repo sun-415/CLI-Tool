@@ -2,17 +2,68 @@ use std::env;
 use std::fs;
 use std::process;
 
-fn is_valid_line(line: &str) -> bool {
-    // Reject empty or whitespace only lines
+#[derive(Debug)]
+struct Record {
+    date_raw: String,
+    kind_raw: String,
+    amount_raw: String,
+}
+
+#[derive(Debug)]
+enum ParseError {
+    EmptyLine,
+    WrongFieldCount,
+    InvalidKind,
+}
+
+#[derive(Debug)]
+enum Kind {
+    Workout,
+    Meal,
+    Sleep,
+}
+
+fn parse_kind(s: &str) -> Option<Kind> {
+    match s.trim().to_lowercase().as_str() {
+        "workout" => Some(Kind::Workout),
+        "meal" => Some(Kind::Meal),
+        "sleep" => Some(Kind::Sleep),
+        _ => None,
+    }
+}
+
+fn parse_line(line: &str) -> Result<Record, ParseError> {
     let trimmed = line.trim();
+
+    // Reject empty or whitespace-only lines
     if trimmed.is_empty() {
-        return false;
+        return Err(ParseError::EmptyLine);
     }
 
-    // Split by comma and valid only if exactly 3 fields 
-    let field_count = trimmed.split(',').count();
-    field_count == 3
+    // Split by comma
+    let parts: Vec<&str> = trimmed.split(',').collect();
+
+    // Reject if not exactly 3 fields
+    if parts.len() != 3 {
+        return Err(ParseError::WrongFieldCount);
+    }
+
+    let date_raw = parts[0].trim().to_string();
+    let kind_raw = parts[1].trim().to_string();
+    let amount_raw = parts[2].trim().to_string();
+
+    // Validate kind for Week 3
+    if parse_kind(&kind_raw).is_none() {
+        return Err(ParseError::InvalidKind);
+    }
+
+    Ok(Record {
+        date_raw,
+        kind_raw,
+        amount_raw,
+    })
 }
+
 
 fn main() {
     // Collect args where args[0] is the program name, args[1] should be the file path
@@ -35,7 +86,6 @@ fn main() {
         }
     };
 
-    // Week 2: Count total lines (including empty lines), and valid vs rejected
     let mut total_records: usize = 0;
     let mut valid_records: usize = 0;
     let mut rejected_records: usize = 0;
@@ -43,10 +93,17 @@ fn main() {
     for line in contents.lines() {
         total_records += 1;
 
-        if is_valid_line(line) {
-            valid_records += 1;
-        } else {
-            rejected_records += 1;
+        match parse_line(line) {
+            Ok(record) => {
+                valid_records += 1;
+
+                // record is currently not used after parsing,
+                // but keeping this line shows we successfully parsed it
+                let _ = record;
+            }
+            Err(_error) => {
+                rejected_records += 1;
+            }
         }
     }
 
