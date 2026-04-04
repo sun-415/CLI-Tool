@@ -32,3 +32,20 @@
 - Even though it is confusing to learn in the beginning, `Option<Kind>` is useful when a value might or might not exist. `Some(...)` means valid kind, and `None` means invalid kind.
 - `match` is very important when working with enums like `Option` and `Result` because it forces me to handle each possible case.
 - This week helped me understand that Rust code can feel strict, but that makes the code clearer and safer.
+
+# Week 4 Notes
+- This week I refactored my project from one `main.rs` file into multiple modules: `lib.rs`, `model.rs`, `parse.rs`, `validate.rs`, and `report.rs`.
+- I learned that `lib.rs` is the library crate root and defines the module tree, while `main.rs` should stay thin and mostly call into the library code.
+- I start to understand the difference between `mod` and `use`. `mod` declares modules once, while `use` brings names into scope so we can use them in different files.
+- Learning the module tree structure was new and a bit confusing at first. I had to understand that `lib.rs` builds the tree and other files just use it, instead of redefining modules everywhere.
+- I added a new `Entry` struct to represent fully validated data. This helped me separate raw parsed input (`Record`) from validated data (`Entry`).
+- I added `InvalidAmount` and `InvalidDate` to my error enum so the program can track more detailed rejection reasons.
+- For amount validation, I used `amount_raw.parse::<u32>()` with `match`. I learned that parsing into `u32` automatically rejects negative numbers like `-5` and also non-integers like `abc`.
+- For date validation, I implemented a basic format check for `YYYY-MM-DD` using string operations (length, dash positions, and digit checks). This is a simple placeholder and will be improved later with `chrono`.
+- I used `BTreeMap<String, u64>` for tracking rejection reasons. I learned that `BTreeMap` keeps keys sorted, which makes the output deterministic.
+- I practiced using `entry(...).or_insert(...)` again to count rejection reasons. At first I was confused about how it works, especially why it returns a mutable reference and why we need `*count += 1`.
+- I also learned more about `String` vs `&str`, which is very different from other languages. This part was confusing:
+  - `&str` is a reference and does not own data, while `String` owns data.
+  - Some functions return `&str` (like `trim()`), while others return `String` (like `replace()` or `to_lowercase()`).
+  - I cannot use indexing like `s[0]` in Rust because strings are UTF-8.
+  - Instead, I have to use slicing like `&s[0..4]` or iterate with `.chars()`.
