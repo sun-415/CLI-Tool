@@ -49,3 +49,18 @@
   - Some functions return `&str` (like `trim()`), while others return `String` (like `replace()` or `to_lowercase()`).
   - I cannot use indexing like `s[0]` in Rust because strings are UTF-8.
   - Instead, I have to use slicing like `&s[0..4]` or iterate with `.chars()`.
+
+# Week 5 Notes
+- This week I learned more about Rust error handling and how useful `Result<T, E>` and `Option<T>` really are in actual code.
+- I was honestly surprised by how often `Result` and `Option` show up and how helpful they are once I started understanding the pattern more.
+- At first they felt confusing and annoying because I kept having to unwrap, match, or convert values, but now I see that they make the program deal with errors and missing values in a very explicit way.
+- I learned how the `?` operator makes code much shorter by returning early on errors instead of writing a lot of nested `match` code.
+- I added `chrono` and used `NaiveDate::parse_from_str` for real calendar validation, which is much stronger than my Week 4 placeholder date check.
+- I also learned that `chrono` alone checks whether a date is a real calendar date, but I still wanted to keep a strict format check for exact `YYYY-MM-DD`, so I combined both.
+- This helped me understand the difference between malformed dates like `01-10-2026` and impossible dates like `2026-02-30`.
+- I changed `Entry.date` from `String` to `NaiveDate`, which helped me understand the difference between raw text input and validated typed data.
+- I practiced using `ok_or(...)` and `map_err(...)`. These were hard to understand at first because they convert `Option` into `Result` and also convert one error type into another.
+- One thing I struggled with was understanding why a function can only return one error type in `Result<T, E>` and why different errors sometimes need to be converted or wrapped.
+- I also learned to separate fatal errors from non-fatal errors. Invalid CLI usage and unreadable files should stop the whole program, but bad records inside the file should just be counted as rejected and allow the report to finish.
+- Adding the `--strict` flag helped me understand that a CLI can still finish all processing and print the report, but then choose a non-zero exit code at the end if rejected records should count as failure.
+- I also learned that usage messages and fatal errors should go to stderr, while normal report output should go to stdout.
