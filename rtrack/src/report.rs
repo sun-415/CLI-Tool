@@ -39,9 +39,8 @@ pub fn build_report(contents: &str) -> Report {
 
         match parse_line(line) {
             Ok(record) => match validate_record(record) {
-                Ok(entry) => {
+                Ok(_entry) => {
                     report.valid_records += 1;
-                    let _ = entry;
                 }
                 Err(error) => {
                     report.add_rejection(error);

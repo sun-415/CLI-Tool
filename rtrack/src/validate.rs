@@ -1,7 +1,9 @@
+use chrono::NaiveDate;
+
 use crate::model::{Entry, ParseError, Record};
 use crate::parse::parse_kind;
 
-fn is_basic_date_format(date: &str) -> bool {
+fn is_strict_yyyy_mm_dd(date: &str) -> bool {
     if date.len() != 10 {
         return false;
     }
@@ -26,23 +28,19 @@ fn is_basic_date_format(date: &str) -> bool {
 }
 
 pub fn validate_record(record: Record) -> Result<Entry, ParseError> {
-    if !is_basic_date_format(&record.date_raw) {
+    if !is_strict_yyyy_mm_dd(&record.date_raw) {
         return Err(ParseError::InvalidDate);
     }
 
-    let kind = match parse_kind(&record.kind_raw) {
-        Some(k) => k,
-        None => return Err(ParseError::InvalidKind),
-    };
+    let date = NaiveDate::parse_from_str(&record.date_raw, "%Y-%m-%d")
+        .map_err(|_| ParseError::InvalidDate)?;
 
-    let amount = match record.amount_raw.parse::<u32>() {
-        Ok(n) => n,
-        Err(_) => return Err(ParseError::InvalidAmount),
-    };
+    let kind = parse_kind(&record.kind_raw).ok_or(ParseError::InvalidKind)?;
 
-    Ok(Entry {
-        date: record.date_raw,
-        kind,
-        amount,
-    })
+    let amount = record
+        .amount_raw
+        .parse::<u32>()
+        .map_err(|_| ParseError::InvalidAmount)?;
+
+    Ok(Entry { date, kind, amount })
 }
