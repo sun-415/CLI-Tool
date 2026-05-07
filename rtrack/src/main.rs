@@ -4,7 +4,9 @@ use std::fmt;
 use std::fs;
 use std::process::ExitCode;
 
-use rtrack::report::{build_report, print_report, Report};
+use rtrack::process_str;
+use rtrack::processor::CountingProcessor;
+use rtrack::report::{Report, print_report};
 
 const USAGE: &str = "Usage: rtrack <path> [--strict]";
 
@@ -67,7 +69,8 @@ fn run() -> Result<(Report, bool), AppError> {
         source,
     })?;
 
-    let report = build_report(&contents);
+    let mut processor = CountingProcessor::new();
+    let report = process_str(&contents, &mut processor);
     Ok((report, cli.strict))
 }
 

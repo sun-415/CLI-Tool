@@ -1,10 +1,8 @@
 use std::collections::BTreeMap;
 
 use crate::model::ParseError;
-use crate::parse::parse_line;
-use crate::validate::validate_record;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Report {
     pub total_records: u64,
     pub valid_records: u64,
@@ -29,30 +27,17 @@ impl Report {
         let count = self.rejection_reasons.entry(key).or_insert(0);
         *count += 1;
     }
-}
 
-pub fn build_report(contents: &str) -> Report {
-    let mut report = Report::new();
+    pub fn add_delta(&mut self, delta: Report) {
+        self.total_records += delta.total_records;
+        self.valid_records += delta.valid_records;
+        self.rejected_records += delta.rejected_records;
 
-    for line in contents.lines() {
-        report.total_records += 1;
-
-        match parse_line(line) {
-            Ok(record) => match validate_record(record) {
-                Ok(_entry) => {
-                    report.valid_records += 1;
-                }
-                Err(error) => {
-                    report.add_rejection(error);
-                }
-            },
-            Err(error) => {
-                report.add_rejection(error);
-            }
+        for (reason, count) in delta.rejection_reasons {
+            let total = self.rejection_reasons.entry(reason).or_insert(0);
+            *total += count;
         }
     }
-
-    report
 }
 
 pub fn print_report(report: &Report) {

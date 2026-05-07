@@ -64,3 +64,13 @@
 - I also learned to separate fatal errors from non-fatal errors. Invalid CLI usage and unreadable files should stop the whole program, but bad records inside the file should just be counted as rejected and allow the report to finish.
 - Adding the `--strict` flag helped me understand that a CLI can still finish all processing and print the report, but then choose a non-zero exit code at the end if rejected records should count as failure.
 - I also learned that usage messages and fatal errors should go to stderr, while normal report output should go to stdout.
+
+# Week 6 Notes
+- This week I added a `Processor` trait so valid `Entry` values can be handled by a replaceable processing step.
+- The default implementation is `CountingProcessor`, which keeps the current behavior by returning a small report delta with one valid record.
+- I made the pipeline explicit as `parse -> validate -> process -> report` inside the library-level `process_str` function.
+- `main.rs` now still handles CLI arguments and file reading, but the record-processing logic lives in the library and is easier to test.
+- I learned that a trait can describe behavior without forcing the rest of the program to know the concrete type doing the work.
+- Passing `&mut impl Processor` lets the processor keep state later if needed, while still allowing simple code today.
+- Returning a report delta from `process` made the trait match the curriculum wording without changing the output format.
+- I added a unit test for `process_str`, which works with an input string and does not need file I/O.
