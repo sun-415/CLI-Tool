@@ -9,7 +9,7 @@ pub struct Record {
     pub amount_raw: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ParseError {
     EmptyLine,
     WrongFieldCount,
@@ -18,7 +18,7 @@ pub enum ParseError {
     InvalidDate,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Kind {
     Workout,
     Meal,

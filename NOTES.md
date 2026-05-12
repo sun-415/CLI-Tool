@@ -74,3 +74,13 @@
 - Passing `&mut impl Processor` lets the processor keep state later if needed, while still allowing simple code today.
 - Returning a report delta from `process` made the trait match the curriculum wording without changing the output format.
 - I added a unit test for `process_str`, which works with an input string and does not need file I/O.
+
+# Week 7 Notes
+- This week I added unit tests across parsing, validation, and reporting so the project has more confidence before adding more features.
+- I learned that tests can live close to the code they test by using `#[cfg(test)] mod tests`.
+- I added table-driven tests for `parse_kind` and amount parsing, which made repeated input/output cases easier to read.
+- I learned that `assert_eq!` needs compared types like `Kind` and `ParseError` to implement `PartialEq`, so I derived `PartialEq` and `Eq`.
+- I pulled amount parsing into a small helper function so it could be tested directly without needing a whole `Record`.
+- I added a test for deterministic rejection reason ordering by checking the order of the `BTreeMap` keys.
+- The hardest bug I caught was in my own expectation: empty lines in a sample file still count as total records, then get rejected as `empty_line`.
+- Testing also made the pipeline order clearer: invalid kind is caught during parsing, while invalid date and amount are caught during validation.

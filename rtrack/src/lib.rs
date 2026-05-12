@@ -49,4 +49,32 @@ mod tests {
         assert_eq!(report.rejected_records, 1);
         assert_eq!(report.rejection_reasons.get("invalid_date"), Some(&1));
     }
+
+    #[test]
+    fn process_str_keeps_rejection_reasons_sorted() {
+        let input = "\
+2026-01-01,running,25
+not-a-date,meal,100
+2026-01-03,sleep,abc
+2026-01-04,meal";
+
+        let mut processor = CountingProcessor::new();
+        let report = process_str(input, &mut processor);
+
+        let reasons: Vec<&str> = report
+            .rejection_reasons
+            .keys()
+            .map(String::as_str)
+            .collect();
+
+        assert_eq!(
+            reasons,
+            vec![
+                "invalid_amount",
+                "invalid_date",
+                "invalid_kind",
+                "wrong_field_count"
+            ]
+        );
+    }
 }
