@@ -84,3 +84,13 @@
 - I added a test for deterministic rejection reason ordering by checking the order of the `BTreeMap` keys.
 - The hardest bug I caught was in my own expectation: empty lines in a sample file still count as total records, then get rejected as `empty_line`.
 - Testing also made the pipeline order clearer: invalid kind is caught during parsing, while invalid date and amount are caught during validation.
+
+# Week 8: Minigrep Architecture Notes
+- `minigrep` and `rtrack` both use the same important Rust CLI pattern: keep `main.rs` focused on command-line arguments, file reading, error printing, and exit behavior, while putting testable business logic in `lib.rs`.
+- In `minigrep`, `Config::build` separates argument parsing from `main`, and `run(config)` separates application execution from process exit. This keeps `main` small and makes the control flow easier to read.
+- `rtrack` already follows a similar shape: `main.rs` parses CLI input and reads the file, then calls `process_str` in the library to handle the actual record pipeline.
+- `minigrep` has very small pure functions like `search(query, contents) -> Vec<&str>`, which are easy to test because they do not touch files or environment variables.
+- The same pattern is useful in `rtrack`: functions like `parse_line`, `validate_record`, `parse_kind`, and `process_str` are easier to test because they take strings or structs as input and return values instead of printing or reading files directly.
+- One pattern from `minigrep` that could come to `rtrack` is a cleaner CLI config type. `rtrack` already has `Cli`, but it could eventually look more like `Config::build` if argument parsing grows.
+- Another useful pattern is keeping environment or CLI choices outside the core logic. In `minigrep`, `IGNORE_CASE` decides which search function to call, but the search functions themselves stay simple.
+- For `rtrack`, that means future flags like filters, output formats, or strict mode should be handled at the edge of the program, while parsing, validation, processing, and reporting stay testable library code.
