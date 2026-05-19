@@ -16,24 +16,20 @@ pub fn parse_line(line: &str) -> Result<Record, ParseError> {
         return Err(ParseError::EmptyLine);
     }
 
-    let parts: Vec<&str> = trimmed.split(',').collect();
+    let fields: Vec<&str> = trimmed.split(',').map(str::trim).collect();
 
-    if parts.len() != 3 {
+    let [date_raw, kind_raw, amount_raw] = fields.as_slice() else {
         return Err(ParseError::WrongFieldCount);
-    }
+    };
 
-    let date_raw = parts[0].trim().to_string();
-    let kind_raw = parts[1].trim().to_string();
-    let amount_raw = parts[2].trim().to_string();
-
-    if parse_kind(&kind_raw).is_none() {
+    if parse_kind(kind_raw).is_none() {
         return Err(ParseError::InvalidKind);
     }
 
     Ok(Record {
-        date_raw,
-        kind_raw,
-        amount_raw,
+        date_raw: date_raw.to_string(),
+        kind_raw: kind_raw.to_string(),
+        amount_raw: amount_raw.to_string(),
     })
 }
 

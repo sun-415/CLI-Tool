@@ -8,23 +8,10 @@ fn is_strict_yyyy_mm_dd(date: &str) -> bool {
         return false;
     }
 
-    let bytes = date.as_bytes();
-
-    if bytes[4] != b'-' || bytes[7] != b'-' {
-        return false;
-    }
-
-    for (i, b) in bytes.iter().enumerate() {
-        if i == 4 || i == 7 {
-            continue;
-        }
-
-        if !b.is_ascii_digit() {
-            return false;
-        }
-    }
-
-    true
+    date.as_bytes().iter().enumerate().all(|(i, b)| match i {
+        4 | 7 => *b == b'-',
+        _ => b.is_ascii_digit(),
+    })
 }
 
 fn parse_amount(amount: &str) -> Result<u32, ParseError> {

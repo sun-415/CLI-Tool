@@ -77,4 +77,22 @@ not-a-date,meal,100
             ]
         );
     }
+
+    #[test]
+    fn process_str_handles_trimmed_fields_and_mixed_rejections() {
+        let input = "\
+ 2026-01-01 , workout , 45
+2026-01-02,meal,-5
+2026-01-03,sleep
+2026-01-04,SLEEP,480";
+
+        let mut processor = CountingProcessor::new();
+        let report = process_str(input, &mut processor);
+
+        assert_eq!(report.total_records, 4);
+        assert_eq!(report.valid_records, 2);
+        assert_eq!(report.rejected_records, 2);
+        assert_eq!(report.rejection_reasons.get("invalid_amount"), Some(&1));
+        assert_eq!(report.rejection_reasons.get("wrong_field_count"), Some(&1));
+    }
 }
