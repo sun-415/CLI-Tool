@@ -94,3 +94,13 @@
 - One pattern from `minigrep` that could come to `rtrack` is a cleaner CLI config type. `rtrack` already has `Cli`, but it could eventually look more like `Config::build` if argument parsing grows.
 - Another useful pattern is keeping environment or CLI choices outside the core logic. In `minigrep`, `IGNORE_CASE` decides which search function to call, but the search functions themselves stay simple.
 - For `rtrack`, that means future flags like filters, output formats, or strict mode should be handled at the edge of the program, while parsing, validation, processing, and reporting stay testable library code.
+
+# Week 9 Notes
+- This week I practiced using iterators where they make the code clearer without refactoring everything.
+- In `parse_line`, I changed field parsing to `split(',').map(str::trim).collect()`, which reads like the actual steps: split the line, trim each field, then collect the fields.
+- I used slice pattern matching with `let [date_raw, kind_raw, amount_raw] = fields.as_slice()` so the wrong-field-count case is still explicit.
+- In date validation, I replaced the manual loop with `.iter().enumerate().all(...)`, which expresses that every byte position must satisfy the date-format rule.
+- I learned that iterator chains are lazy until something consumes them, like `collect()` or `all()`.
+- I also learned that iterator style is not automatically better; it helps when it makes the intent easier to read.
+- I added a test for `process_str` with trimmed fields and mixed rejection reasons so the iterator-based parsing path is covered.
+- The output stayed the same for `samples/basic.txt`, which is the main sign that the refactor did not change behavior.
